@@ -1,11 +1,5 @@
 ''''This is simply a test, please don't grade it or consider it a part of the assignment because im just trying to get a player sprite that i can control into this thingie majingie'''
-from math import pi, sin, cos
-
-from direct.showbase.ShowBase import ShowBase
-from direct.task import Task
-from direct.actor.Actor import Actor
-
-
+'''
 class MyApp(ShowBase):
     def __init__(self):
         ShowBase.__init__(self)
@@ -40,3 +34,35 @@ class MyApp(ShowBase):
 
 app = MyApp()
 app.run()
+'''
+from direct.showbase.ShowBase import ShowBase
+
+from direct.actor.Actor import Actor
+from panda3d.core import WindowProperties
+from panda3d.core import Loader as loader
+from panda3d.core import AmbientLight
+from panda3d.core import Vec4
+
+class Game(ShowBase):
+    def __init__(self):
+        ShowBase.__init__(self)
+
+        self.disableMouse()
+
+        properties = WindowProperties()
+        properties.setSize(1000, 750)
+        self.win.requestProperties(properties)
+
+        self.environment = loader.loadModel("Models/Misc/environment")
+        self.environment.reparentTo(render)
+
+        self.tempActor = Actor("Models/PandaChan/act_p3d_chan", {"walk" : "Models/PandaChan/a_p3d_chan_run"})
+        self.tempActor.getChild(0).setH(180)
+        self.tempActor.reparentTo(render)
+        self.tempActor.loop("walk")
+
+        self.camera.setPos(0, 0, 32)
+        self.camera.setP(-90)
+
+game = Game()
+game.run()
