@@ -1,6 +1,6 @@
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 FPS = 60
-test = "hello world"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+SPEED = 0.5
