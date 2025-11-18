@@ -1,4 +1,4 @@
-''''This is simply a test, please don't grade it or consider it a part of the assignment because im just trying to get a player sprite that i can control into this thingie majingie'''
+''''https://www.youtube.com/watch?v=QtzuxPUJ_Qc = Panda3D game prototype - used this as my'''
 '''
 class MyApp(ShowBase):
     def __init__(self):
@@ -37,44 +37,69 @@ app.run()
 '''
 from panda3d.core import loadPrcFileData
 loadPrcFileData('', 'window-title Aniketh Nandipatis Awesome Game!!!!1!!1!!')
-import direct.directbase.DirectStart
-from panda3d.core import WindowProperties
-from panda3d.core import CollisionTraverser,CollisionNode
-from panda3d.core import CollisionHandlerQueue,CollisionRay
-from panda3d.core import CollisionTube,CollisionSegment
-from panda3d.core import Filename,AmbientLight,DirectionalLight
-from panda3d.core import PandaNode,NodePath,Camera,TextNode
-from panda3d.core import Point3,Vec3,Vec4,BitMask32
-from panda3d.core import LightRampAttrib
-from direct.gui.OnscreenText import OnscreenText
-from direct.actor.Actor import Actor
-from direct.showbase.DirectObject import DirectObject
-import random, sys, os, math
+
+
+from panda3d.core import GeomVertexData, GeomVertexFormat, Geom, GeomTriangles, GeomVertexWriter, GeomNode, Texture, TextureAttrib, NodePath, RenderState, ModelRoot
 from direct.showbase.ShowBase import ShowBase
-from settings import *
 
-class Game(ShowBase, DirectObject):
+class MyApp(ShowBase):
+
     def __init__(self):
-        super().__init__()
-        #working on camera controls today:
-        self.controlMap = {"left":0, "right":0, "forward":0, "backward":0}
-        self.mousebtn = [0,0,0]
-        self.disable_mouse()
-        #loads a basic cube to the environment by using loader and the model is from ShowBase
-        test_cube = self.loader.loadModel("models/box")
-        #sets the position of the cube
-        test_cube.setPos(-10, 10, 0)
-        #reparents the cube to the render so that it shows up in the game window
-        test_cube.reparentTo(self.render)
+        ShowBase.__init__(self)
 
-        #loads a panda model to the environment
-        panda_actor = self.loader.loadModel("models/panda-model")
-        #scales down the panda model so that it fits in the window
-        panda_actor.setScale(0.005)
-        #sets the position of the panda model
-        panda_actor.setPos(10, 10, 0)
-        #reparents the panda model to the render so that it shows up in the game window
-        panda_actor.reparentTo(self.render)
+        # Creating vertex data.
+        vdata = GeomVertexData('name', GeomVertexFormat.getV3n3t2(), Geom.UHStatic)
+        vdata.setNumRows(3)
 
-game = Game()
-game.run()
+        vertex = GeomVertexWriter(vdata, 'vertex')
+        normal = GeomVertexWriter(vdata, 'normal')
+        texcoord = GeomVertexWriter(vdata, 'texcoord')
+
+        # Adding vertex data.
+        vertex.addData3(-1, -1, 0)
+        vertex.addData3(1, -1, 0)
+        vertex.addData3(1, 1, 0)
+        vertex.addData3(-1, 1, 0)
+
+        normal.addData3(0, 0, 1)
+        normal.addData3(0, 0, 1)
+        normal.addData3(0, 0, 1)
+        normal.addData3(0, 0, 1)
+        
+        texcoord.addData2(0, 0)
+        texcoord.addData2(1, 0)
+        texcoord.addData2(1, 1)
+        texcoord.addData2(0, 1)
+
+
+        # Creating primitive - a.
+        prim_a = GeomTriangles(Geom.UHStatic)
+        prim_a.addVertices(0, 1, 2)
+        prim_a.addVertices(0, 2, 3)
+        prim_a.closePrimitive()
+
+        geom1 = Geom(vdata)
+        geom1.addPrimitive(prim_a)
+
+
+        # Load texture.
+        tex1 = Texture("Texture")
+        tex1.setup2dTexture()
+        tex1.read('panda.jpg')
+        tex1.setMagfilter(Texture.FTNearest)
+        tex1.setMinfilter(Texture.FTNearest)
+
+        # Create new geom state.
+        state_a = RenderState.make(TextureAttrib.make(tex1))
+
+        # Create geom node.
+        geom_node = GeomNode('Plane')
+        geom_node.add_geom(geom1, state_a)
+
+        # Attach geom node.
+        root = NodePath(geom_node)
+        root.reparent_to(render)
+        #root.writeBamFile("plane.bam")
+
+app = MyApp()
+app.run()
