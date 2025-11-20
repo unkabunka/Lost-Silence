@@ -1,4 +1,5 @@
-''''https://www.youtube.com/watch?v=QtzuxPUJ_Qc = Panda3D game prototype - used this as my'''
+''''https://www.youtube.com/watch?v=QtzuxPUJ_Qc = Panda3D game prototype - used this as reference
+https://arsthaumaturgis.github.io/Panda3DTutorial.io/tutorial/prologue.html - second reference'''
 '''
 class MyApp(ShowBase):
     def __init__(self):
