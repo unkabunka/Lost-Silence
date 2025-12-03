@@ -1,5 +1,5 @@
 ''''https://www.youtube.com/watch?v=QtzuxPUJ_Qc = Panda3D game prototype - used this as reference
-https://arsthaumaturgis.github.io/Panda3DTutorial.io/tutorial/prologue.html - second reference'''
+ - second reference'''
 '''
 class MyApp(ShowBase):
     def __init__(self):
@@ -36,71 +36,37 @@ class MyApp(ShowBase):
 app = MyApp()
 app.run()
 '''
-from panda3d.core import loadPrcFileData
-loadPrcFileData('', 'window-title Aniketh Nandipatis Awesome Game!!!!1!!1!!')
-
-
-from panda3d.core import GeomVertexData, GeomVertexFormat, Geom, GeomTriangles, GeomVertexWriter, GeomNode, Texture, TextureAttrib, NodePath, RenderState, ModelRoot
 from direct.showbase.ShowBase import ShowBase
+from panda3d.core import DirectionalLight
+from panda3d.core import loadPrcFile
+from panda3d.core import AmbientLight
+loadPrcFile('settings.prc') # Loads the settings file so that I can cache the models for better loading and so it doesn't look all blurry
 
-class MyApp(ShowBase):
 
+
+class Game(ShowBase):
     def __init__(self):
-        ShowBase.__init__(self)
+        super().__init__()
+        self.LoadModels()
+        self.LoadLights()
 
-        # Creating vertex data.
-        vdata = GeomVertexData('name', GeomVertexFormat.getV3n3t2(), Geom.UHStatic)
-        vdata.setNumRows(3)
+    def LoadTerrarin(self):
+        pass
+    def LoadModels(self):
+          self.tile = loader.loadModel("dirt-block.glb")
+          self.tile.reparentTo(render)
 
-        vertex = GeomVertexWriter(vdata, 'vertex')
-        normal = GeomVertexWriter(vdata, 'normal')
-        texcoord = GeomVertexWriter(vdata, 'texcoord')
+    def LoadLights(self):
+        self.mainLight = DirectionalLight("main light")
+        self.mainLightNodePath = render.attachNewNode(self.mainLight)
+        self.mainLightNodePath.setHpr(30, -60, 0) #stands for heading (side to side camera), pitch (up to down camera), roll
+        self.render.setLight(self.mainLightNodePath) #renders the light to the scene so it actually works
 
-        # Adding vertex data.
-        vertex.addData3(-1, -1, 0)
-        vertex.addData3(1, -1, 0)
-        vertex.addData3(1, 1, 0)
-        vertex.addData3(-1, 1, 0)
-
-        normal.addData3(0, 0, 1)
-        normal.addData3(0, 0, 1)
-        normal.addData3(0, 0, 1)
-        normal.addData3(0, 0, 1)
+        self.ambientLight = AmbientLight("ambient light") #so that some parts of the model aren't pitch black and so there still are shadows but they're not too dark
+        self.ambientLight.setColor((0.2, 0.2, 0.2, 1)) #the 1 at the end is for alpha/transparency
+        self.ambientLightNodePath = render.attachNewNode(self.ambientLight)
+        self.render.setLight(self.ambientLightNodePath)
         
-        texcoord.addData2(0, 0)
-        texcoord.addData2(1, 0)
-        texcoord.addData2(1, 1)
-        texcoord.addData2(0, 1)
-
-
-        # Creating primitive - a.
-        prim_a = GeomTriangles(Geom.UHStatic)
-        prim_a.addVertices(0, 1, 2)
-        prim_a.addVertices(0, 2, 3)
-        prim_a.closePrimitive()
-
-        geom1 = Geom(vdata)
-        geom1.addPrimitive(prim_a)
-
-
-        # Load texture.
-        tex1 = Texture("Texture")
-        tex1.setup2dTexture()
-        tex1.read('panda.jpg')
-        tex1.setMagfilter(Texture.FTNearest)
-        tex1.setMinfilter(Texture.FTNearest)
-
-        # Create new geom state.
-        state_a = RenderState.make(TextureAttrib.make(tex1))
-
-        # Create geom node.
-        geom_node = GeomNode('Plane')
-        geom_node.add_geom(geom1, state_a)
-
-        # Attach geom node.
-        root = NodePath(geom_node)
-        root.reparent_to(render)
-        #root.writeBamFile("plane.bam")
-
-app = MyApp()
-app.run()
+if __name__ == "__main__":
+    g = Game()
+    g.run()
