@@ -40,6 +40,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import DirectionalLight
 from panda3d.core import loadPrcFile
 from panda3d.core import AmbientLight
+from sprites import CubeSprite
 loadPrcFile('settings.prc') # Loads the settings file so that I can cache the models for better loading and so it doesn't look all blurry
 
 
@@ -50,11 +51,12 @@ class Game(ShowBase):
         self.LoadModels()
         self.LoadLights()
 
-    def LoadTerrarin(self):
+    def LoadTerrain(self):
         pass
+
     def LoadModels(self):
-          self.tile = loader.loadModel("dirt-block.glb")
-          self.tile.reparentTo(render)
+        self.tile = loader.loadModel("dirt-block.glb")
+        self.tile.reparentTo(render)
 
     def LoadLights(self):
         self.mainLight = DirectionalLight("main light")
