@@ -45,30 +45,30 @@ loadPrcFile('settings.prc') # Loads the settings file so that I can cache the mo
 
 
 
-class Game(ShowBase):
-    def __init__(self):
+class Game(ShowBase): # Game class that handles the main game loop and loading everything
+    def __init__(self): #initialization function that sets up the game
         super().__init__()
         self.LoadModels()
         self.LoadLights()
 
-    def LoadTerrain(self):
+    def LoadTerrain(self): #need to work on loading multiple cubes in a grid pattern
         pass
 
-    def LoadModels(self):
-        self.tile = loader.loadModel("dirt-block.glb")
-        self.tile.reparentTo(render)
+    def LoadModels(self): #Loads a cube for now 
+        self.tile = loader.loadModel("dirt-block.glb") #loads the model from the file
+        self.tile.reparentTo(render) #reparents the model to the render so it loads in the scene
 
-    def LoadLights(self):
-        self.mainLight = DirectionalLight("main light")
-        self.mainLightNodePath = render.attachNewNode(self.mainLight)
+    def LoadLights(self): #lights for the scene so that it isn't pitch black
+        self.mainLight = DirectionalLight("main light") #creates a directional light 
+        self.mainLightNodePath = render.attachNewNode(self.mainLight) #attaches the light to the render so it can be used in the scene
         self.mainLightNodePath.setHpr(30, -60, 0) #stands for heading (side to side camera), pitch (up to down camera), roll
         self.render.setLight(self.mainLightNodePath) #renders the light to the scene so it actually works
 
         self.ambientLight = AmbientLight("ambient light") #so that some parts of the model aren't pitch black and so there still are shadows but they're not too dark
         self.ambientLight.setColor((0.2, 0.2, 0.2, 1)) #the 1 at the end is for alpha/transparency
-        self.ambientLightNodePath = render.attachNewNode(self.ambientLight)
-        self.render.setLight(self.ambientLightNodePath)
+        self.ambientLightNodePath = render.attachNewNode(self.ambientLight) #attaches the ambient light to the render
+        self.render.setLight(self.ambientLightNodePath) #renders the ambient light to the scene
         
-if __name__ == "__main__":
+if __name__ == "__main__": #main game loop
     g = Game()
     g.run()
