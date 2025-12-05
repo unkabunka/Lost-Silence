@@ -1,74 +1,32 @@
 ''''https://www.youtube.com/watch?v=QtzuxPUJ_Qc = Panda3D game prototype - used this as reference
- - second reference'''
-'''
-class MyApp(ShowBase):
-    def __init__(self):
-        ShowBase.__init__(self)
+I ended up giving up on Pandas3D because Ursina is way easier to use and has a lot of built in features that make it better for my use case
+but I wanted to keep this code for reference
+References for Ursina: https://www.ursinaengine.org/ursina_for_dummies.html'''
 
-        # Load the environment model.
-        self.scene = self.loader.loadModel("models/environment")
-        # Reparent the model to render.
-        self.scene.reparentTo(self.render)
-        # Apply scale and position transforms on the model.
-        self.scene.setScale(0.25, 0.25, 0.25)
-        self.scene.setPos(-8, 42, 0)
+from ursina import *                    # Import the ursina engine
+import random                           # Import the random library
 
-        # Add the spinCameraTask procedure to the task manager.
-        self.taskMgr.add(self.spinCameraTask, "SpinCameraTask")
+random_generator = random.Random()      # Create a random number generator
 
-        # Load and transform the panda actor.
-        self.pandaActor = Actor("models/panda-model",
-                                {"walk": "models/panda-walk4"})
-        self.pandaActor.setScale(0.005, 0.005, 0.005)
-        self.pandaActor.reparentTo(self.render)
-        # Loop its animation.
-        self.pandaActor.loop("walk")
-
-    # Define a procedure to move the camera.
-    def spinCameraTask(self, task):
-        angleDegrees = task.time * 6.0
-        angleRadians = angleDegrees * (pi / 180.0)
-        self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
-        self.camera.setHpr(angleDegrees, 0, 0)
-        return Task.cont
+def update():
+    cube.rotation_y += time.dt * 100                 # Rotate every time update is called
+def input(key):
+        if key == 'space':
+            red = random_generator.random() * 255
+            green = random_generator.random() * 255
+            blue = random_generator.random() * 255
+            cube.color = color.rgb(red, green, blue)
 
 
-app = MyApp()
-app.run()
-'''
-from direct.showbase.ShowBase import ShowBase
-from panda3d.core import DirectionalLight
-from panda3d.core import loadPrcFile
-from panda3d.core import AmbientLight
-from sprites import CubeSprite
-loadPrcFile('settings.prc') # Loads the settings file so that I can cache the models for better loading and so it doesn't look all blurry
+app = Ursina()                          # Initialise your Ursina app
 
+window.title = 'My Game'                # The window title
+window.borderless = False               # Show a border
+window.fullscreen = False               # Do not go Fullscreen
+window.exit_button.visible = False      # Do not show the in-game red X that loses the window
+window.fps_counter.enabled = True       # Show the FPS (Frames per second) counter
 
+cube = Entity(model='cube', color=color.orange, scale=(2,2,2))
+app.run() 
 
-class Game(ShowBase): # Game class that handles the main game loop and loading everything
-    def __init__(self): #initialization function that sets up the game
-        super().__init__()
-        self.LoadModels()
-        self.LoadLights()
-
-    def LoadTerrain(self): #need to work on loading multiple cubes in a grid pattern
-        pass
-
-    def LoadModels(self): #Loads a cube for now 
-        self.tile = loader.loadModel("dirt-block.glb") #loads the model from the file
-        self.tile.reparentTo(render) #reparents the model to the render so it loads in the scene
-
-    def LoadLights(self): #lights for the scene so that it isn't pitch black
-        self.mainLight = DirectionalLight("main light") #creates a directional light 
-        self.mainLightNodePath = render.attachNewNode(self.mainLight) #attaches the light to the render so it can be used in the scene
-        self.mainLightNodePath.setHpr(30, -60, 0) #stands for heading (side to side camera), pitch (up to down camera), roll
-        self.render.setLight(self.mainLightNodePath) #renders the light to the scene so it actually works
-
-        self.ambientLight = AmbientLight("ambient light") #so that some parts of the model aren't pitch black and so there still are shadows but they're not too dark
-        self.ambientLight.setColor((0.2, 0.2, 0.2, 1)) #the 1 at the end is for alpha/transparency
-        self.ambientLightNodePath = render.attachNewNode(self.ambientLight) #attaches the ambient light to the render
-        self.render.setLight(self.ambientLightNodePath) #renders the ambient light to the scene
-        
-if __name__ == "__main__": #main game loop
-    g = Game()
-    g.run()
+app.run()   
