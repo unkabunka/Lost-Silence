@@ -3,30 +3,70 @@ I ended up giving up on Pandas3D because Ursina is way easier to use and has a l
 but I wanted to keep this code for reference
 References for Ursina: https://www.ursinaengine.org/ursina_for_dummies.html'''
 
-from ursina import *                    # Import the ursina engine
-import random                           # Import the random library
+from ursina import *
+from ursina.prefabs.first_person_controller import FirstPersonController
+import math
+import random
 
-random_generator = random.Random()      # Create a random number generator
+app = Ursina()
 
-def update():
-    cube.rotation_y += time.dt * 100                 # Rotate every time update is called
-def input(key):
-        if key == 'space':
-            red = random_generator.random() * 255
-            green = random_generator.random() * 255
-            blue = random_generator.random() * 255
-            cube.color = color.rgb(red, green, blue)
+# Window settings
+window.title = 'Ursina Voxel Demo (no textures)'
+window.borderless = False
+window.fullscreen = False
+window.exit_button.visible = True
+window.fps_counter.enabled = True
 
+# Lighting
+DirectionalLight(y=2, z=3, shadows=True)
+AmbientLight(color=Vec4(0.6, 0.6, 0.6, 1))
 
-app = Ursina()                          # Initialise your Ursina app
+# Simple palette (no textures)
+GRASS = color.rgb(106, 190, 48)
+DIRT  = color.rgb(134, 96, 67)
+STONE = color.rgb(120, 120, 120)
+SAND  = color.rgb(237, 201, 175)
+WATER = color.rgb(64, 164, 223)
 
-window.title = 'My Game'                # The window title
-window.borderless = False               # Show a border
-window.fullscreen = False               # Do not go Fullscreen
-window.exit_button.visible = False      # Do not show the in-game red X that loses the window
-window.fps_counter.enabled = True       # Show the FPS (Frames per second) counter
+palette = {
+    'grass': GRASS,
+    'dirt' : DIRT,
+    'stone': STONE,
+    'sand' : SAND,
+    'water': WATER
+}
 
-cube = Entity(model='cube', color=color.orange, scale=(2,2,2))
-app.run() 
+# Voxel class
+class Voxel(Button):
+    def __init__(self, position=(0,0,0), texture=None, color=color.white, **kwargs):
+        super().__init__(
+            parent=scene,
+            position=position,
+            model='cube',
+            origin_y=0.5,
+            texture=None,        # we don't use textures
+            color=color,
+            scale=1,
+            collider='box',
+            **kwargs
+        )
 
-app.run()   
+    def input(self, key):
+        # left click -> remove
+        if self.hovered:
+            if key == 'left mouse down':
+                destroy(self)
+            if key == 'right mouse down':
+                # place a block adjacent to this one
+                new_pos = self.position + mouse.normal
+                # prevent placing blocks inside the player
+                if not (player.position - new_pos).length() < 0.9:
+                    Voxel(position=new_pos, color=current_block_color)
+
+# Controls UI text
+instructions = Text(
+    text="Left click: remove block   •   Right click: place block   •   Scroll: change block color",
+    origin=(0, -15),
+    background=True,
+    scale=1.25
+)
