@@ -1,11 +1,28 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
-
+from perlin_noise import PerlinNoise
+from numpy import floor
+from random import randint
 
 app = Ursina()
 
-# Define a Voxel class.
-# By setting the parent to scene and the model to 'cube' it becomes a 3d button.
+terrain = Entity(model = None, collider = None)
+noise = PerlinNoise(octaves = 2, seed = randint(-1000000000,1000000000))
+
+terrain_width = 20
+freq = 24
+amp = 5
+
+window.color = color.rgb(0,0,0)
+indra = Sky()
+indra.color = window.color
+window.fullscreen = True
+
+for i in range(terrain_width*terrain_width):
+    cube = Entity(model = 'cube', collider = 'mesh', texture = 'white_cube')
+    cube.x = floor(i / terrain_width)
+    cube.z = floor(i % terrain_width)
+    cube.y = floor(noise([cube.x / freq, cube.z / freq]) * amp)
 
 class Voxel(Button):
     def __init__(self, position=(0,0,0)):
@@ -17,11 +34,8 @@ class Voxel(Button):
             color=color.hsv(0, 0, random.uniform(.9, 1.0)),
             highlight_color=color.lime,
         )
-
-for z in range(30):
-    for x in range(30):
-        voxel = Voxel(position=(x,0,z)) 
-
+        
+player = FirstPersonController()
 
 def input(key):
     if key == 'left mouse down':
@@ -38,7 +52,4 @@ def input(key):
     if key == 'escape':
         application.quit()
 
-
-
-player = FirstPersonController()
 app.run()
